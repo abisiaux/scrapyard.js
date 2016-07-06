@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sharkone/scrapyard.js.git"
+    "url": "git+https://github.com/abisiaux/scrapyard.js.git"
   },
   "author": "Thomas Texier (@sharkone)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sharkone/scrapyard.js/issues"
+    "url": "https://github.com/abisiaux/scrapyard.js/issues"
   },
-  "homepage": "https://github.com/sharkone/scrapyard.js#readme",
+  "homepage": "https://github.com/abisiaux/scrapyard.js#readme",
   "dependencies": {
     "async": "^1.5.2",
     "bittorrent-tracker": "^7.0.1",
@@ -29,6 +29,6 @@
     "parse-torrent": "^5.7.0",
     "request": "^2.69.0",
     "string": "^3.3.1",
-    "cpasbien-api" : "^1.1.0"
+    "cpasbien-api": "^1.1.0"
   }
 }
