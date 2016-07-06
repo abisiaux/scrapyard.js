@@ -12,6 +12,11 @@ exports.movie = function(movieInfo, callback) {
 	api.Search(movieInfo.title).then((values) => {
 		var magnets = [];
 		var nb = 0;
+		
+		if (values === undefined || values.items.length == 0) {
+			callback(null, magnets);
+		}
+		
 		for (var i = 0; i < values.items.length; i++) {
 
 			var magnetInfo = {
