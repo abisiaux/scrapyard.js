@@ -15,59 +15,58 @@ const api = new CPBAPI()
 function search(query, options, callback) {
 	api.Search(query, options).then((values) => {
 		var magnets = [];
-		var nb = 0;
-		
+
 		if (values === undefined || values.items.length == 0) {
 			callback(null, magnets);
 		}
-		
+
 		for (var i = 0; i < values.items.length; i++) {
 
-			var magnetInfo = {
-				title:  values.items[i].title,
-				source: 'Cpasbien',
-				seeds:  values.items[i].seeds,
-				peers:  values.items[i].leechs
-			};
+			var magnetLink       = values.items[i].torrent;
+			var parsedMagnetLink = parseTorrent(magnetLink);
 
-			var size = values.items[i].size;
-			var split = size.split(" ");
-			var value = split[0].split(".");
-			if (split[1].startsWith("Ko")) {
-				magnetInfo.size = value[0] * 1024 + value[1];
-			} else if (split[1].startsWith("Mo")) {
-				magnetInfo.size = value[0] * 1024 * 1024 + value[1] * 1024;
-			} else if (split[1].startsWith("Go")) {
-				magnetInfo.size = value[0] * 1024 * 1024 *1024 + value[1] * 1024 * 1024;
-			}
+			console.log(parsedMagnetLink);
 
-			parseTorrent.remote(values.items[i].torrent, function (err, parsedTorrent) {
-				nb = nb + 1;
-				if (err)  {
-					console.log(err);
-				} else {
-					console.log("Torrent OK : " + parsedTorrent.infoHash);
+			if (parsedMagnetLink.dn) {
+				if (!magnets.find(function(element, index, array) { return parseTorrent(element.link).infoHash == parsedMagnetLink.infoHash; })) {
+
+					var magnetInfo = {
+							title:  values.items[i].title,
+							source: 'Cpasbien',
+							link:   magnetLink,
+							seeds:  values.items[i].seeds,
+							peers:  values.items[i].leechs
+					};
+
+					var size = values.items[i].size;
+					var split = size.split(" ");
+					var value = split[0].split(".");
+					if (split[1].startsWith("Ko")) {
+						magnetInfo.size = value[0] * 1024 + value[1];
+					} else if (split[1].startsWith("Mo")) {
+						magnetInfo.size = value[0] * 1024 * 1024 + value[1] * 1024;
+					} else if (split[1].startsWith("Go")) {
+						magnetInfo.size = value[0] * 1024 * 1024 *1024 + value[1] * 1024 * 1024;
+					}
+
 					magnetInfo.link = magnet.encode({
 						dn: magnetInfo.title,
-						xt: [ 'urn:btih:' + parsedTorrent.infoHash ],
+						xt: [ 'urn:btih:' + parsedMagnetLink.infoHash ],
 						tr: [
-							'udp://tracker.internetwarriors.net:1337',
-							'udp://tracker.coppersurfer.tk:6969',
-							'udp://open.demonii.com:1337',
-							'udp://tracker.leechers-paradise.org:6969',
-							'udp://tracker.openbittorrent.com:80'
-						]
+						     'udp://tracker.internetwarriors.net:1337',
+						     'udp://tracker.coppersurfer.tk:6969',
+						     'udp://open.demonii.com:1337',
+						     'udp://tracker.leechers-paradise.org:6969',
+						     'udp://tracker.openbittorrent.com:80'
+						     ]
 					});
-	
+
 					magnets.push(magnetInfo);
 				}
-				
-				if (nb == values.items.length) {
-					console.log("Send callback");
-					callback(null, magnets);
-				}		
-			});
+			}
 		}
+
+		callback(null, magnets);
 	});
 }
 
