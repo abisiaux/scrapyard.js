@@ -14,6 +14,9 @@ const api = new CPBAPI()
 
 function search(query, options, callback) {
 	api.Search(query, options).then((values) => {
+		
+		console.log(values);
+		
 		var magnets = [];
 
 		if (values === undefined || values.items.length == 0) {
