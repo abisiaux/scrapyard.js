@@ -5,11 +5,15 @@ var parseTorrent = require('parse-torrent');
 
 var network = require('../network');
 
+//----------------------------------------------------------------------------
+
 const CPBAPI = require('cpasbien-api')
 const api = new CPBAPI()
 
-exports.movie = function(movieInfo, callback) {
-	api.Search(movieInfo.title).then((values) => {
+//----------------------------------------------------------------------------
+
+function search(query, options, callback) {
+	api.Search(query, options).then((values) => {
 		var magnets = [];
 		var nb = 0;
 		
@@ -67,9 +71,14 @@ exports.movie = function(movieInfo, callback) {
 	});
 }
 
+//----------------------------------------------------------------------------
 
+exports.movie = function(movieInfo, callback) {
+	search(movieInfo.title, {scope: 'movies'}, callback);
+}
+
+//----------------------------------------------------------------------------
 
 exports.episode = function(showInfo, seasonIndex, episodeIndex, callback) {
-	 var magnets = [];
-	 callback(null, magnets);
+	search(util.format('%s-s%s-e%s', showInfo.title, season, episode), {scope: 'tvshow'}, callback);
 }

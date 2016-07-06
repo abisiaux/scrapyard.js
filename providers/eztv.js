@@ -22,6 +22,8 @@ exports.episode = function(showInfo, seasonIndex, episodeIndex, callback) {
             for (var key in data.episodes[i].torrents) {
               var magnetLink       = data.episodes[i].torrents[key].url;
               var parsedMagnetLink = parseTorrent(magnetLink);
+              
+              console.log(parsedMagnetLink);
 
               if (parsedMagnetLink.dn) {
                 if (!magnets.find(function(element, index, array) { return parseTorrent(element.link).infoHash == parsedMagnetLink.infoHash; })) {
