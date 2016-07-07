@@ -20,6 +20,7 @@ function parse(item, callback) {
 			console.log("Error : ", err);
 			callback(err, null);
 		}
+		console.log("Parsed torrent : ", parsedTorrent);
 		if (parsedTorrent.dn) {
 
 			var magnetInfo = {
