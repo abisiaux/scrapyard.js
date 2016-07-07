@@ -17,7 +17,8 @@ function parse(item, callback) {
 	console.log("Parse item : ", item);
 	parseTorrent.remote(item.torrent, function (err, parsedTorrent) {
 		if (err) {
-			callback(err, null)
+			console.log("Error : ", err);
+			callback(err, null);
 		}
 		if (parsedTorrent.dn) {
 
@@ -53,7 +54,8 @@ function parse(item, callback) {
 			});
 			callback(null, magnetInfo);
 		} else {
-			callback(null, null)
+			console.log("Parsed torrent dn empty !");
+			callback(null, null);
 		}
 	});
 }
