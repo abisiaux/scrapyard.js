@@ -21,7 +21,7 @@ function parse(item, callback) {
 			callback(err, null);
 		}
 		console.log("Parsed torrent : ", parsedTorrent);
-		if (parsedTorrent.dn) {
+//		if (parsedTorrent.dn) {
 
 			var magnetInfo = {
 					title:  item.title,
@@ -54,10 +54,10 @@ function parse(item, callback) {
 				     ]
 			});
 			callback(null, magnetInfo);
-		} else {
-			console.log("Parsed torrent dn empty !");
-			callback(null, null);
-		}
+//		} else {
+//			console.log("Parsed torrent dn empty !");
+//			callback(null, null);
+//		}
 	});
 }
 
