@@ -52,8 +52,9 @@ function parse(item, callback) {
 				     ]
 			});
 			callback(null, magnetInfo);
+		} else {
+			callback(null, null)
 		}
-		callback(null, null)
 	});
 }
 
@@ -93,7 +94,9 @@ exports.movie = function(movieInfo, callback) {
 				} else {
 					movieMagnets = [];
 					for (var i = 0; i < results.length; i++) {
-						movieMagnets = mergeMagnetLists(movieMagnets, results[i]);
+						if(results[i] != null) {
+							movieMagnets = mergeMagnetLists(movieMagnets, results[i]);
+						}
 					}
 					callback(null, movieMagnets);
 				}
