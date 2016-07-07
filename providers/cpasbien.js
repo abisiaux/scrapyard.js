@@ -18,23 +18,18 @@ function search(query, options, callback) {
 		
 		console.log('Query : %s', query);
 		
-		console.log(values);
-
 		var magnets = [];
 	
 		if (values === undefined || values.items.length == 0) {
 			callback(null, magnets);
 		}
-
-		console.log(values.items);
+		
 		asyncForEach.forEach(values.items, function(item, callback2) {
 			console.log(item);
 			parseTorrent.remote(item.torrent, function (err, parsedTorrent, callback3) {
 				if (err) {
 					callback3(err)
 				}
-				console.log(parsedTorrent)
-
 				if (parsedTorrent.dn) {
 
 					var magnetInfo = {
@@ -69,11 +64,13 @@ function search(query, options, callback) {
 					});
 
 					magnets.push(magnetInfo);
-					callback2();
+					callback3();
 				}
 			});
 		}, 
 		function(err) {
+			console.log('Results : ');
+			console.log(magnets);
 			callback(err, magnets);
 		}
 		);
@@ -91,14 +88,17 @@ exports.movie = function(movieInfo, callback) {
 			 }
 			 ],
 			 function(err, results) {
+				console.log('Results : ');
+				console.log(magnets);
+				
 				if (err) {
 					callback(err, null);
 				} else {
-					episodeMagnets = [];
+					movieMagnets = [];
 					for (var i = 0; i < results.length; i++) {
-						episodeMagnets = mergeMagnetLists(episodeMagnets, results[i]);
+						movieMagnets = mergeMagnetLists(movieMagnets, results[i]);
 					}
-					callback(null, episodeMagnets);
+					callback(null, movieMagnets);
 				}
 			}
 	);
