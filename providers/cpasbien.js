@@ -13,7 +13,8 @@ const api = new CPBAPI()
 
 //----------------------------------------------------------------------------
 
-function parseTorrent(item, callback) {
+function parse(item, callback) {
+	console.log("Parse item : ", item);
 	parseTorrent.remote(item.torrent, function (err, parsedTorrent) {
 		if (err) {
 			callback(err, null)
@@ -52,21 +53,20 @@ function parseTorrent(item, callback) {
 			});
 			callback(null, magnetInfo);
 		}
-		callback(err, null)
+		callback(null, null)
 	});
 }
 
 function search(query, options, callback) {
 	api.Search(query, options).then((values) => {
-		
+
 		console.log('Query : %s', query);
-	
+
 		if (values === undefined || values.items.length == 0) {
 			callback(null, []);
 		}
-		
-		async.map(values.items, parseTorent, 
-		function(err, magnets) {
+		async.map(values.items, parse, 
+				function(err, magnets) {
 			console.log('Results : ');
 			console.log(magnets);
 			callback(err, magnets);
