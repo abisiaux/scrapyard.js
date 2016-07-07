@@ -10,9 +10,9 @@ var cpasbien = require('./providers/cpasbien');
 exports.movie = function(movieInfo, callback) {
   async.parallel(
     [
-      function(callback) {
+      /*function(callback) {
         kickass.movie(movieInfo, callback);
-      },
+      },*/
       function(callback) {
         cpasbien.movie(movieInfo, callback);
       }
@@ -41,12 +41,12 @@ exports.movie = function(movieInfo, callback) {
 exports.episode = function(showInfo, seasonIndex, episodeIndex, callback) {
   async.parallel(
     [
-      function(callback) {
+      /*function(callback) {
         eztv.episode(showInfo, seasonIndex, episodeIndex, callback);
       },
       function(callback) {
         kickass.episode(showInfo, seasonIndex, episodeIndex, callback);
-      },
+      },*/
       function(callback) {
         cpasbien.episode(showInfo, seasonIndex, episodeIndex, callback);
       }

@@ -1,4 +1,5 @@
 var async   = require('async');
+var asyncForEach   = require('async-foreach');
 var magnet  = require('magnet-uri');
 var util    = require('util');
 var parseTorrent = require('parse-torrent');
@@ -14,77 +15,69 @@ const api = new CPBAPI()
 
 function search(query, options, callback) {
 	api.Search(query, options).then((values) => {
+		
+		console.log('Query : %s', query);
+		
+		console.log(values);
 
 		var magnets = [];
-
+	
 		if (values === undefined || values.items.length == 0) {
 			callback(null, magnets);
 		}
 
-		async.forEach(values.items, 
-				function(item, callback) {
+		console.log(values.items);
+		asyncForEach.forEach(values.items, function(item, callback2) {
+			console.log(item);
+			parseTorrent.remote(item.torrent, function (err, parsedTorrent, callback3) {
+				if (err) {
+					callback3(err)
+				}
+				console.log(parsedTorrent)
 
-			parseTorrent.remote(values.items[i].torrent, function (err, parsedTorrent, callback) {
-				 if (err) {
-					 callback(err,magnets)
-				 }
-				 console.log(parsedTorrent)
-			 });
+				if (parsedTorrent.dn) {
+
+					var magnetInfo = {
+							title:  item.title,
+							source: 'Cpasbien',
+							link:   item.torrent,
+							seeds:  item.seeds,
+							peers:  item.leechs
+					};
+
+					var size = item.size;
+					var split = size.split(" ");
+					var value = split[0].split(".");
+					if (split[1].startsWith("Ko")) {
+						magnetInfo.size = value[0] * 1024 + value[1];
+					} else if (split[1].startsWith("Mo")) {
+						magnetInfo.size = value[0] * 1024 * 1024 + value[1] * 1024;
+					} else if (split[1].startsWith("Go")) {
+						magnetInfo.size = value[0] * 1024 * 1024 *1024 + value[1] * 1024 * 1024;
+					}
+
+					magnetInfo.link = magnet.encode({
+						dn: magnetInfo.title,
+						xt: [ 'urn:btih:' + parsedTorrent.infoHash ],
+						tr: [
+						     'udp://tracker.internetwarriors.net:1337',
+						     'udp://tracker.coppersurfer.tk:6969',
+						     'udp://open.demonii.com:1337',
+						     'udp://tracker.leechers-paradise.org:6969',
+						     'udp://tracker.openbittorrent.com:80'
+						     ]
+					});
+
+					magnets.push(magnetInfo);
+					callback2();
+				}
+			});
 		}, 
 		function(err) {
-			// sort items by date
-			items.sort(function(a, b) {
-				return (Date.parse(b.date) - Date.parse(a.name));
-			});
-			var rssFeed = createAggregatedFeed();
-			callback(err, rssFeed);
+			callback(err, magnets);
 		}
 		);
-
-
-		console.log(parsedMagnetLink);
-
-		if (parsedMagnetLink.dn) {
-			if (!magnets.find(function(element, index, array) { return parseTorrent(element.link).infoHash == parsedMagnetLink.infoHash; })) {
-
-				var magnetInfo = {
-						title:  values.items[i].title,
-						source: 'Cpasbien',
-						link:   magnetLink,
-						seeds:  values.items[i].seeds,
-						peers:  values.items[i].leechs
-				};
-
-				var size = values.items[i].size;
-				var split = size.split(" ");
-				var value = split[0].split(".");
-				if (split[1].startsWith("Ko")) {
-					magnetInfo.size = value[0] * 1024 + value[1];
-				} else if (split[1].startsWith("Mo")) {
-					magnetInfo.size = value[0] * 1024 * 1024 + value[1] * 1024;
-				} else if (split[1].startsWith("Go")) {
-					magnetInfo.size = value[0] * 1024 * 1024 *1024 + value[1] * 1024 * 1024;
-				}
-
-				magnetInfo.link = magnet.encode({
-					dn: magnetInfo.title,
-					xt: [ 'urn:btih:' + parsedMagnetLink.infoHash ],
-					tr: [
-					     'udp://tracker.internetwarriors.net:1337',
-					     'udp://tracker.coppersurfer.tk:6969',
-					     'udp://open.demonii.com:1337',
-					     'udp://tracker.leechers-paradise.org:6969',
-					     'udp://tracker.openbittorrent.com:80'
-					     ]
-				});
-
-				magnets.push(magnetInfo);
-			}
-		}
-	}
-
-	callback(null, magnets);
-});
+	});
 }
 
 //----------------------------------------------------------------------------
@@ -109,8 +102,6 @@ exports.movie = function(movieInfo, callback) {
 				}
 			}
 	);
-
-
 }
 
 //----------------------------------------------------------------------------
@@ -119,6 +110,7 @@ exports.episode = function(showInfo, seasonIndex, episodeIndex, callback) {
 	async.parallel(
 			[
 			 function(callback) {
+				 console.log('Search tv show episode on cpasbien');
 				 var season = seasonIndex.toString();
 				 if (seasonIndex < 10) {
 					 season = '0' + season;
