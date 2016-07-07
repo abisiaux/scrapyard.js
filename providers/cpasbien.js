@@ -122,7 +122,7 @@ exports.episode = function(showInfo, seasonIndex, episodeIndex, callback) {
 				 if (episodeIndex < 10) {
 					 episode = '0' + episode;
 				 }
-				 search(util.format('%s-s%s-e%s', showInfo.title, season, episode), {scope: 'tvshow'}, callback);
+				 search(util.format('%s-s%s-e%s', showInfo.title, season, episode), {scope: 'tvshow', language: 'EN'}, callback);
 			 }
 			 ],
 			 function(err, results) {
