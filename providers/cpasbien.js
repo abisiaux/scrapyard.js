@@ -13,62 +13,60 @@ const api = new CPBAPI()
 
 //----------------------------------------------------------------------------
 
+function parseTorrent(item, callback) {
+	parseTorrent.remote(item.torrent, function (err, parsedTorrent) {
+		if (err) {
+			callback(err, null)
+		}
+		if (parsedTorrent.dn) {
+
+			var magnetInfo = {
+					title:  item.title,
+					source: 'Cpasbien',
+					link:   item.torrent,
+					seeds:  item.seeds,
+					peers:  item.leechs
+			};
+
+			var size = item.size;
+			var split = size.split(" ");
+			var value = split[0].split(".");
+			if (split[1].startsWith("Ko")) {
+				magnetInfo.size = value[0] * 1024 + value[1];
+			} else if (split[1].startsWith("Mo")) {
+				magnetInfo.size = value[0] * 1024 * 1024 + value[1] * 1024;
+			} else if (split[1].startsWith("Go")) {
+				magnetInfo.size = value[0] * 1024 * 1024 *1024 + value[1] * 1024 * 1024;
+			}
+
+			magnetInfo.link = magnet.encode({
+				dn: magnetInfo.title,
+				xt: [ 'urn:btih:' + parsedTorrent.infoHash ],
+				tr: [
+				     'udp://tracker.internetwarriors.net:1337',
+				     'udp://tracker.coppersurfer.tk:6969',
+				     'udp://open.demonii.com:1337',
+				     'udp://tracker.leechers-paradise.org:6969',
+				     'udp://tracker.openbittorrent.com:80'
+				     ]
+			});
+			callback(null, magnetInfo);
+		}
+		callback(err, null)
+	});
+}
+
 function search(query, options, callback) {
 	api.Search(query, options).then((values) => {
 		
 		console.log('Query : %s', query);
-		
-		var magnets = [];
 	
 		if (values === undefined || values.items.length == 0) {
-			callback(null, magnets);
+			callback(null, []);
 		}
 		
-		asyncForEach.forEach(values.items, function(item, callback2) {
-			console.log(item);
-			parseTorrent.remote(item.torrent, function (err, parsedTorrent, callback3) {
-				if (err) {
-					callback3(err)
-				}
-				if (parsedTorrent.dn) {
-
-					var magnetInfo = {
-							title:  item.title,
-							source: 'Cpasbien',
-							link:   item.torrent,
-							seeds:  item.seeds,
-							peers:  item.leechs
-					};
-
-					var size = item.size;
-					var split = size.split(" ");
-					var value = split[0].split(".");
-					if (split[1].startsWith("Ko")) {
-						magnetInfo.size = value[0] * 1024 + value[1];
-					} else if (split[1].startsWith("Mo")) {
-						magnetInfo.size = value[0] * 1024 * 1024 + value[1] * 1024;
-					} else if (split[1].startsWith("Go")) {
-						magnetInfo.size = value[0] * 1024 * 1024 *1024 + value[1] * 1024 * 1024;
-					}
-
-					magnetInfo.link = magnet.encode({
-						dn: magnetInfo.title,
-						xt: [ 'urn:btih:' + parsedTorrent.infoHash ],
-						tr: [
-						     'udp://tracker.internetwarriors.net:1337',
-						     'udp://tracker.coppersurfer.tk:6969',
-						     'udp://open.demonii.com:1337',
-						     'udp://tracker.leechers-paradise.org:6969',
-						     'udp://tracker.openbittorrent.com:80'
-						     ]
-					});
-
-					magnets.push(magnetInfo);
-					callback3();
-				}
-			});
-		}, 
-		function(err) {
+		async.map(values.items, parseTorent, 
+		function(err, magnets) {
 			console.log('Results : ');
 			console.log(magnets);
 			callback(err, magnets);
@@ -88,9 +86,8 @@ exports.movie = function(movieInfo, callback) {
 			 }
 			 ],
 			 function(err, results) {
-				console.log('Results : ');
-				console.log(magnets);
-				
+				console.log('Results after : ');
+				console.log(results);
 				if (err) {
 					callback(err, null);
 				} else {
