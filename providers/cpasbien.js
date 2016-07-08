@@ -65,12 +65,12 @@ function search(query, type, lang, callback) {
 
 // ----------------------------------------------------------------------------
 
-exports.movie = function(movieInfo, callback) {
+exports.movie = function(movieInfo, lang, callback) {
 
 	async.parallel(
 			[
 			 function(callback) {
-				 search(movieInfo.title, 'MOVIES', null, callback);
+				 search(movieInfo.title, 'MOVIES', lang, callback);
 			 }
 			 ],
 			 function(err, results) {
@@ -104,7 +104,7 @@ exports.episode = function(showInfo, seasonIndex, episodeIndex, lang, callback) 
 				 if (episodeIndex < 10) {
 					 episode = '0' + episode;
 				 }
-				 search(util.format('%s-s%s-e%s', showInfo.title, season, episode), 'TVSHOWS', null, callback);
+				 search(util.format('%s-s%s-e%s', showInfo.title, season, episode), 'TVSHOWS', lang, callback);
 			 }
 			 ],
 			 function(err, results) {
@@ -186,7 +186,7 @@ function _createPagination (pagination) {
 
 // Type : MOVIES, TVSHOWS
 // Lang : FR, VO, VOSTFR
-function SearchCpasbien (query, type, lang, options) {
+function SearchCpasbien (query, type, lang) {
 	console.log('Query : %s - %s - %s', query, type, lang);
 	var URL = CPASBIEN_URL + '/recherche/';
 	
