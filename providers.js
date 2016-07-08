@@ -1,79 +1,79 @@
 var async = require('async');
 
 var scraper = require('./scraper');
-var eztv    = require('./providers/eztv');
+var eztv = require('./providers/eztv');
 var kickass = require('./providers/kickass');
 var cpasbien = require('./providers/cpasbien');
 
-//----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-exports.movie = function(movieInfo, callback) {
-	async.parallel(
-			[
-			 function(callback) {
-				 cpasbien.movie(movieInfo, callback);
-			 },
-			 function(callback) {
-				 kickass.movie(movieInfo, callback);
-			 }
-			 ],
-			 function(err, results) {
-				if (err) {
-					callback(err, null);
-				} else {
-					movieMagnets = [];
-					for (var i = 0; i < results.length; i++) {
-						movieMagnets = mergeMagnetLists(movieMagnets, results[i]);
-					}
+exports.movie = function(movieInfo, lang, callback) {
+	async.parallel([ function(callback) {
+		cpasbien.movie(movieInfo, lang, callback);
 
-					scrapeMagnets(movieMagnets, function(err, scrapedMovieMagnets) {
-						movieMagnets = scrapedMovieMagnets.filter(function(magnet) { return magnet.seeds > 0; });
-						movieMagnets.sort(function(a, b) { return b.seeds - a.seeds; });
-						callback(null, movieMagnets);
-					});
-				}
+	}, function(callback) {
+		kickass.movie(movieInfo, lang, callback);
+
+	} ], function(err, results) {
+		if (err) {
+			callback(err, null);
+
+		} else {
+			movieMagnets = [];
+			for (var i = 0; i < results.length; i++) {
+				movieMagnets = mergeMagnetLists(movieMagnets, results[i]);
 			}
-	);
+
+			scrapeMagnets(movieMagnets, function(err, scrapedMovieMagnets) {
+				movieMagnets = scrapedMovieMagnets.filter(function(magnet) {
+					return magnet.seeds > 0;
+				});
+				movieMagnets.sort(function(a, b) {
+					return b.seeds - a.seeds;
+				});
+				callback(null, movieMagnets);
+			});
+		}
+	});
 }
 
-//----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 exports.episode = function(showInfo, seasonIndex, episodeIndex, lang, callback) {
-	async.parallel(
-			[
-			 function(callback) {
-				 cpasbien.episode(showInfo, seasonIndex, episodeIndex, lang, callback);
-			 },
-			 function(callback) {
-				 eztv.episode(showInfo, seasonIndex, episodeIndex, lang, callback);
-			 },
-			 function(callback) {
-				 kickass.episode(showInfo, seasonIndex, episodeIndex, lang, callback);
-			 }
-			 ],
-			 function(err, results) {
-				if (err) {
-					callback(err, null);
-				} else {
-					episodeMagnets = [];
-					for (var i = 0; i < results.length; i++) {
-						episodeMagnets = mergeMagnetLists(episodeMagnets, results[i]);
-					}
-					scrapeMagnets(episodeMagnets, function(err, scrapedEpisodeMagnets) {
-						episodeMagnets = scrapedEpisodeMagnets.filter(function(magnet) { return magnet.seeds > 0; });
-						episodeMagnets.sort(function(a, b) { return b.seeds - a.seeds; });
-						callback(null, episodeMagnets);
-					});
-				}
+	async.parallel([ function(callback) {
+		cpasbien.episode(showInfo, seasonIndex, episodeIndex, lang, callback);
+
+	}, function(callback) {
+		eztv.episode(showInfo, seasonIndex, episodeIndex, lang, callback);
+
+	}, function(callback) {
+		kickass.episode(showInfo, seasonIndex, episodeIndex, lang, callback);
+
+	} ], function(err, results) {
+		if (err) {
+			callback(err, null);
+		} else {
+			episodeMagnets = [];
+			for (var i = 0; i < results.length; i++) {
+				episodeMagnets = mergeMagnetLists(episodeMagnets, results[i]);
 			}
-	);
+			scrapeMagnets(episodeMagnets, function(err, scrapedEpisodeMagnets) {
+				episodeMagnets = scrapedEpisodeMagnets.filter(function(magnet) {
+					return magnet.seeds > 0;
+				});
+				episodeMagnets.sort(function(a, b) {
+					return b.seeds - a.seeds;
+				});
+				callback(null, episodeMagnets);
+			});
+		}
+	});
 }
 
-//----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 function scrapeMagnets(magnets, callback) {
-	async.each(magnets,
-			function(magnet, callback) {
+	async.each(magnets, function(magnet, callback) {
 		if (magnet.seeds == -1 && magnet.peers == -1 && magnet.link) {
 			scraper.scrape(magnet.link, function(err, scrapeResults) {
 				if (!err) {
@@ -85,14 +85,12 @@ function scrapeMagnets(magnets, callback) {
 		} else {
 			callback();
 		}
-	},
-	function(err) {
+	}, function(err) {
 		callback(null, magnets);
-	}
-	);
+	});
 }
 
-//----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
 function mergeMagnetLists(list1, list2) {
 	var toAdd = [];
@@ -103,7 +101,7 @@ function mergeMagnetLists(list1, list2) {
 
 			for (var j = 0; j < list1.length; j++) {
 				if (list2[i].link == list1[j].link) {
-					list1[j].size  = Math.max(list1[j].size,  list2[i].size);
+					list1[j].size = Math.max(list1[j].size, list2[i].size);
 					list1[j].seeds = Math.max(list1[j].seeds, list2[i].seeds);
 					list1[j].peers = Math.max(list1[j].peers, list2[i].peers);
 					alreadyAdded = true;

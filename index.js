@@ -99,8 +99,8 @@ app.post('/api/movies/watchlist', function(req, res) {
 
 // ----------------------------------------------------------------------------
 
-app.get('/api/movie/:trakt_slug', function(req, res) {
-  movies.getInfo(req.params.trakt_slug, function(err, movieInfo) {
+app.get('/api/movie/:trakt_slug/:lang', function(req, res) {
+  movies.getInfo(req.params.trakt_slug, req.params.lang, function(err, movieInfo) {
     if (err) {
       res.status(('statusCode' in err) ? err['statusCode'] : 500).send(err);
     } else {

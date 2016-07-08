@@ -71,8 +71,8 @@ function getInfo(movie, callback) {
 
 // ----------------------------------------------------------------------------
 
-function getMagnets(movieInfo, callback) {
-  providers.movie(movieInfo, function(err, movieMagnets) {
+function getMagnets(movieInfo, lang, callback) {
+  providers.movie(movieInfo, lang, function(err, movieMagnets) {
     if (err) {
       callback(err, null);
     } else {
@@ -146,7 +146,7 @@ function getPeople(movie, callback) {
 
 // ----------------------------------------------------------------------------
 
-exports.getInfo = function(movie, callback) {
+exports.getInfo = function(movie, lang, callback) {
   var movieInfoFull = {};
 
   async.parallel(
@@ -158,7 +158,7 @@ exports.getInfo = function(movie, callback) {
           } else {
             movieInfoFull = merge(movieInfoFull, movieInfo);
 
-            getMagnets(movieInfoFull, function(err, movieMagnets) {
+            getMagnets(movieInfoFull, lang, function(err, movieMagnets) {
               if (err) {
                 callback(err, null);
               } else {
