@@ -14,6 +14,11 @@ var VERSION = '0.0.1';
 
 // ----------------------------------------------------------------------------
 
+var port = parseInt(process.argv[2], 10) || 80;
+var interface = process.argv[3] || null;
+
+app.listen(port, interface);
+
 app.set('json spaces', 2);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
