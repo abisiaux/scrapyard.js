@@ -202,7 +202,7 @@ app.get('/api/show/:trakt_slug/season/:season_index', function(req, res) {
 // ----------------------------------------------------------------------------
 
 app.get('/api/show/:trakt_slug/season/:season_index/episode/:episode_index/:lang', function(req, res) {
-  shows.getEpisode(req.params.trakt_slug, parseInt(req.params.season_index, 10) || 1, parseInt(req.params.episode_index, 10) || 1, lang, function(err, episodeInfo) {
+  shows.getEpisode(req.params.trakt_slug, parseInt(req.params.season_index, 10) || 1, parseInt(req.params.episode_index, 10) || 1, req.params.lang, function(err, episodeInfo) {
     if (err) {
       res.status(('statusCode' in err) ? err['statusCode'] : 500).send(err);
     } else {
