@@ -104,7 +104,7 @@ exports.movie = function(movieInfo, callback) {
 
 //----------------------------------------------------------------------------
 
-exports.episode = function(showInfo, seasonIndex, episodeIndex, callback) {
+exports.episode = function(showInfo, seasonIndex, episodeIndex, lang, callback) {
 	async.parallel(
 			[
 			 function(callback) {
@@ -117,7 +117,7 @@ exports.episode = function(showInfo, seasonIndex, episodeIndex, callback) {
 				 if (episodeIndex < 10) {
 					 episode = '0' + episode;
 				 }
-				 search(util.format('%s-s%s-e%s', showInfo.title, season, episode), {scope: 'tvshow', language: 'EN'}, callback);
+				 search(util.format('%s-s%s-e%s', showInfo.title, season, episode), {scope: 'tvshow', language: lang}, callback);
 			 }
 			 ],
 			 function(err, results) {

@@ -119,8 +119,8 @@ function getEpisode(show, seasonIndex, episodeIndex, callback) {
 
 // ----------------------------------------------------------------------------
 
-function getMagnets(showInfo, seasonIndex, episodeIndex, callback) {
-  providers.episode(showInfo, seasonIndex, episodeIndex, function(err, episodeMagnetData) {
+function getMagnets(showInfo, seasonIndex, episodeIndex, lang, callback) {
+  providers.episode(showInfo, seasonIndex, episodeIndex, lang, function(err, episodeMagnetData) {
     if (err) {
       callback(err, null);
     } else {
@@ -221,7 +221,7 @@ exports.getSeason = function(show, seasonIndex, callback) {
 
 // ----------------------------------------------------------------------------
 
-exports.getEpisode = function(show, seasonIndex, episodeIndex, callback) {
+exports.getEpisode = function(show, seasonIndex, episodeIndex, lang, callback) {
   var episodeInfoFull = {};
 
   async.parallel(
@@ -241,7 +241,7 @@ exports.getEpisode = function(show, seasonIndex, episodeIndex, callback) {
           if (err) {
             callback(err, null);
           } else {
-            getMagnets(showInfo, seasonIndex, episodeIndex, function(err, episodeMagnets) {
+            getMagnets(showInfo, seasonIndex, episodeIndex, lang, function(err, episodeMagnets) {
               if (err) {
                 callback(err, null);
               } else {

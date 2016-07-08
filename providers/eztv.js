@@ -10,7 +10,7 @@ EZTV_URL = 'https://api-fetch.website/tv'
 
 // ----------------------------------------------------------------------------
 
-exports.episode = function(showInfo, seasonIndex, episodeIndex, callback) {
+exports.episode = function(showInfo, seasonIndex, episodeIndex, lang, callback) {
   var magnets = [];
   network.json(EZTV_URL + '/show/' + showInfo.imdb_id, null, null, function(err, data) {
     if (err) {

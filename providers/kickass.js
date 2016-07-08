@@ -58,7 +58,7 @@ exports.movie = function(movieInfo, callback) {
 
 // ----------------------------------------------------------------------------
 
-exports.episode = function(showInfo, seasonIndex, episodeIndex, callback) {
+exports.episode = function(showInfo, seasonIndex, episodeIndex, lang, callback) {
   async.parallel(
     [
       // function(callback) {
