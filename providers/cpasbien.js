@@ -21,43 +21,38 @@ function parse(item, callback) {
 			callback(err, null);
 		}
 		console.log("Parsed torrent : ", parsedTorrent);
-//		if (parsedTorrent.dn) {
 
-			var magnetInfo = {
-					title:  item.title,
-					source: 'Cpasbien',
-					link:   item.torrent,
-					seeds:  item.seeds,
-					peers:  item.leechs
-			};
+		var magnetInfo = {
+				title:  item.title,
+				source: 'Cpasbien',
+				link:   item.torrent,
+				seeds:  item.seeds,
+				peers:  item.leechs
+		};
 
-			var size = item.size;
-			var split = size.split(" ");
-			var value = split[0].split(".");
-			if (split[1].startsWith("Ko")) {
-				magnetInfo.size = value[0] * 1024 + value[1];
-			} else if (split[1].startsWith("Mo")) {
-				magnetInfo.size = value[0] * 1024 * 1024 + value[1] * 1024;
-			} else if (split[1].startsWith("Go")) {
-				magnetInfo.size = value[0] * 1024 * 1024 *1024 + value[1] * 1024 * 1024;
-			}
+		var size = item.size;
+		var split = size.split(" ");
+		var value = split[0].split(".");
+		if (split[1].startsWith("Ko")) {
+			magnetInfo.size = value[0] * 1024 + value[1];
+		} else if (split[1].startsWith("Mo")) {
+			magnetInfo.size = value[0] * 1024 * 1024 + value[1] * 1024;
+		} else if (split[1].startsWith("Go")) {
+			magnetInfo.size = value[0] * 1024 * 1024 *1024 + value[1] * 1024 * 1024;
+		}
 
-			magnetInfo.link = magnet.encode({
-				dn: magnetInfo.title,
-				xt: [ 'urn:btih:' + parsedTorrent.infoHash ],
-				tr: [
-				     'udp://tracker.internetwarriors.net:1337',
-				     'udp://tracker.coppersurfer.tk:6969',
-				     'udp://open.demonii.com:1337',
-				     'udp://tracker.leechers-paradise.org:6969',
-				     'udp://tracker.openbittorrent.com:80'
-				     ]
-			});
-			callback(null, magnetInfo);
-//		} else {
-//			console.log("Parsed torrent dn empty !");
-//			callback(null, null);
-//		}
+		magnetInfo.link = magnet.encode({
+			dn: magnetInfo.title,
+			xt: [ 'urn:btih:' + parsedTorrent.infoHash ],
+			tr: [
+			     'udp://tracker.internetwarriors.net:1337',
+			     'udp://tracker.coppersurfer.tk:6969',
+			     'udp://open.demonii.com:1337',
+			     'udp://tracker.leechers-paradise.org:6969',
+			     'udp://tracker.openbittorrent.com:80'
+			     ]
+		});
+		callback(null, magnetInfo);
 	});
 }
 
@@ -86,7 +81,7 @@ exports.movie = function(movieInfo, callback) {
 	async.parallel(
 			[
 			 function(callback) {
-				 search(movieInfo.title, {scope: 'movies'}, callback);
+				 search(movieInfo.title, {language: 'FR'}, callback);
 			 }
 			 ],
 			 function(err, results) {

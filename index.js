@@ -3,10 +3,6 @@ require('newrelic');
 var app        = require('express')();
 var bodyParser = require('body-parser');
 
-var port = parseInt(process.argv[2], 10) || 80;
-var interface = process.argv[3] || null;
-
-
 var movies     = require('./movies')
 var network    = require('./network');
 var scraper    = require('./scraper');
@@ -18,8 +14,6 @@ var VERSION = '0.0.1';
 
 // ----------------------------------------------------------------------------
 
-
-app.listen(port, interface);
 app.set('json spaces', 2);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
