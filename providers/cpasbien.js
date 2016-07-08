@@ -1,5 +1,4 @@
 var async   = require('async');
-var asyncForEach   = require('async-foreach');
 var magnet  = require('magnet-uri');
 var util    = require('util');
 var parseTorrent = require('parse-torrent');
