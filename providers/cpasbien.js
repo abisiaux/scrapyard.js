@@ -84,6 +84,7 @@ exports.episode = function(showInfo, seasonIndex, episodeIndex, lang, callback) 
 		 episode = '0' + episode;
 	 }
 	 search(util.format('%s-s%s-e%s', showInfo.title, season, episode), 'TVSHOWS', lang, callback);
+}
 
 // ----------------------------------------------------------------------------
 
