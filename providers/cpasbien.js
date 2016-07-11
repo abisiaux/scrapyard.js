@@ -67,27 +67,6 @@ exports.movie = function(movieInfo, lang, callback) {
 	console.log('Search movie [%s] on cpasbien with lang [%s]',movieInfo.title, lang);
 	
 	search(movieInfo.title, 'MOVIES', lang, callback);
-
-//	async.parallel(
-//			[
-//			 function(callback) {
-//				 search(movieInfo.title, 'MOVIES', lang, callback);
-//			 }
-//			 ],
-//			 function(err, results) {
-//				if (err) {
-//					callback(err, null);
-//				} else {
-//					movieMagnets = [];
-//					for (var i = 0; i < results.length; i++) {
-//						if(results[i] != null) {
-//							movieMagnets = mergeMagnetLists(movieMagnets, results[i]);
-//						}
-//					}
-//					callback(null, movieMagnets);
-//				}
-//			}
-//	);
 }
 
 // ----------------------------------------------------------------------------
@@ -105,35 +84,6 @@ exports.episode = function(showInfo, seasonIndex, episodeIndex, lang, callback) 
 		 episode = '0' + episode;
 	 }
 	 search(util.format('%s-s%s-e%s', showInfo.title, season, episode), 'TVSHOWS', lang, callback);
-	 
-//	async.parallel(
-//			[
-//			 function(callback) {
-//				 console.log('Search tv show episode on cpasbien');
-//				 var season = seasonIndex.toString();
-//				 if (seasonIndex < 10) {
-//					 season = '0' + season;
-//				 }
-//				 var episode = episodeIndex.toString();
-//				 if (episodeIndex < 10) {
-//					 episode = '0' + episode;
-//				 }
-//				 search(util.format('%s-s%s-e%s', showInfo.title, season, episode), 'TVSHOWS', lang, callback);
-//			 }
-//			 ],
-//			 function(err, results) {
-//				if (err) {
-//					callback(err, null);
-//				} else {
-//					episodeMagnets = [];
-//					for (var i = 0; i < results.length; i++) {
-//						episodeMagnets = mergeMagnetLists(episodeMagnets, results[i]);
-//					}
-//					callback(null, episodeMagnets);
-//				}
-//			}
-//	);
-}
 
 // ----------------------------------------------------------------------------
 

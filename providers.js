@@ -9,8 +9,8 @@ var cpasbien = require('./providers/cpasbien');
 
 exports.movie = function(movieInfo, lang, callback) {
 	async.parallel([ function(callback) {
+		console.log("Call movie from providers");
 		cpasbien.movie(movieInfo, lang, callback);
-
 	}, function(callback) {
 		kickass.movie(movieInfo, lang, callback);
 
