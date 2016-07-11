@@ -157,7 +157,6 @@ exports.getInfo = function(movie, lang, callback) {
             callback(err, null);
           } else {
             movieInfoFull = merge(movieInfoFull, movieInfo);
-            console.log("Get movie magnets");
             getMagnets(movieInfoFull, lang, function(err, movieMagnets) {
               if (err) {
                 callback(err, null);

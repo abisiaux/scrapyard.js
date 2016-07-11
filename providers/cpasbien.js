@@ -47,7 +47,7 @@ function parse(item, callback) {
 	});
 }
 
-function search(query, type, lang, callback) {
+function search(query, type, lang, callback) {	
 	SearchCpasbien(query, type, lang).then((values) => {
 		if (values === undefined || values.items.length == 0) {
 			callback(null, []);
@@ -63,27 +63,59 @@ function search(query, type, lang, callback) {
 // ----------------------------------------------------------------------------
 
 exports.movie = function(movieInfo, lang, callback) {
-	
-	console.log('Search movie [%s] on cpasbien with lang [%s]',movieInfo.title, lang);
-	
-	search(movieInfo.title, 'MOVIES', lang, callback);
+	console.log('Search movie on Cpasbien : %s %s', movieInfo.title, lang);
+	async.parallel(
+			[
+			 function(callback) {
+				 search(movieInfo.title, 'MOVIES', lang, callback);
+			 }
+			 ],
+			 function(err, results) {
+				if (err) {
+					callback(err, null);
+				} else {
+					movieMagnets = [];
+					for (var i = 0; i < results.length; i++) {
+						if(results[i] != null) {
+							movieMagnets = mergeMagnetLists(movieMagnets, results[i]);
+						}
+					}
+					callback(null, movieMagnets);
+				}
+			}
+	);
 }
 
 // ----------------------------------------------------------------------------
 
 exports.episode = function(showInfo, seasonIndex, episodeIndex, lang, callback) {
-	
-	
-	 console.log('Search tv show [%s] season [%s] episode [%s] with lang [%s] on cpasbien', showInfo.title, season, episode, lang);
-	 var season = seasonIndex.toString();
-	 if (seasonIndex < 10) {
-		 season = '0' + season;
-	 }
-	 var episode = episodeIndex.toString();
-	 if (episodeIndex < 10) {
-		 episode = '0' + episode;
-	 }
-	 search(util.format('%s-s%s-e%s', showInfo.title, season, episode), 'TVSHOWS', lang, callback);
+	console.log('Search serie on Cpasbien : %s %s %s %s', showInfo.title, seasonIndex, episodeIndex, lang);
+	async.parallel(
+			[
+			 function(callback) {
+				 var season = seasonIndex.toString();
+				 if (seasonIndex < 10) {
+					 season = '0' + season;
+				 }
+				 var episode = episodeIndex.toString();
+				 if (episodeIndex < 10) {
+					 episode = '0' + episode;
+				 }
+				 search(util.format('%s-s%s-e%s', showInfo.title, season, episode), 'TVSHOWS', lang, callback);
+			 }
+			 ],
+			 function(err, results) {
+				if (err) {
+					callback(err, null);
+				} else {
+					episodeMagnets = [];
+					for (var i = 0; i < results.length; i++) {
+						episodeMagnets = mergeMagnetLists(episodeMagnets, results[i]);
+					}
+					callback(null, episodeMagnets);
+				}
+			}
+	);
 }
 
 // ----------------------------------------------------------------------------
@@ -152,7 +184,6 @@ function _createPagination (pagination) {
 // Type : MOVIES, TVSHOWS
 // Lang : FR, VO, VOSTFR
 function SearchCpasbien (query, type, lang) {
-	console.log('Query : %s - %s - %s', query, type, lang);
 	var URL = CPASBIEN_URL + '/recherche/';
 	
 	switch (type) {
@@ -160,9 +191,6 @@ function SearchCpasbien (query, type, lang) {
 		switch (lang) {
 		case 'FR':
 			URL = URL + 'films-french';
-			break;
-		case 'VO':
-			URL = URL + 'films';
 			break;
 		case 'VOSTFR':
 			URL = URL + 'films-vostfr';
@@ -177,9 +205,6 @@ function SearchCpasbien (query, type, lang) {
 		case 'FR':
 			URL = URL + 'series-francaise';
 			break;
-		case 'VO':
-			URL = URL + 'series';
-			break;
 		case 'VOSTFR':
 			URL = URL + 'series-vostfr';
 			break;
@@ -191,7 +216,7 @@ function SearchCpasbien (query, type, lang) {
 	
 	URL = URL + '/' + encodeURI(query.toLowerCase()) + '.html';
 		
-	console.log(URL)
+	console.log('Call : %s', URL)
 	
 	return _crawl(URL);
 }
